@@ -135,7 +135,7 @@ cmd trash ${{
 
 cmd open ${{
 	# printf "Open is being called\n" >> open_log.txt
-    nvim_exts=("lua" "c" "asm" "py" "cpp" "h" "sh" "rs" "srt" "ixx" "cppm" "vhd" )
+    nvim_exts=("lua" "c" "asm" "py" "cpp" "h" "sh" "rs" "srt" "ixx" "cppm" "vhd" "tcl" "xdc" )
 
 
     nvim_files=()
