@@ -135,7 +135,7 @@ cmd trash ${{
 
 cmd open ${{
 	# printf "Open is being called\n" >> open_log.txt
-    nvim_exts=("lua" "c" "asm" "py" "cpp" "h" "sh" "rs" "srt" "ixx" "cppm" )
+    nvim_exts=("lua" "c" "asm" "py" "cpp" "h" "sh" "rs" "srt" "ixx" "cppm" "vhd" )
 
 
     nvim_files=()
@@ -592,8 +592,41 @@ map eO toggle_exec
 
 map ep change_permissions
 
+
+cmd arduino-ide-cli ${{
+    file="$1"
+
+    if [[ -z "$file" ]]; then
+        echo "Usage: arduino_open <file>"
+        return 1
+    fi
+
+	echo "$file"
+
+    nohup ~/.local/bin/arduino-ide "$file" >/dev/null 2>&1 & disown
+}}
+
+
+cmd espflash ${{
+    file="$fx"
+
+    if [[ -z "$file" ]]; then
+        echo "Usage: espflash <file>"
+        return 1
+    fi
+
+	echo "$file"
+
+	~/.config/zsh/arduino/espflash.sh "$file"
+}}
+
 map on !nvim "$f"
 map oN !nvim "."
+
+map oa arduino-ide-cli "$f"
+map oA !arduino-ide "."
+
+map ef espflash
 
 # Keybinding for `rvd` - open files in Neovim with the default session (no session passed)
 map or open_in_nvim "" 
