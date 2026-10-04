@@ -3,7 +3,7 @@ But you still need to install one thing
 
 install commands:
 
-```
+```bash
 # Backup existing ~/.config/lf if it exists, using numbered backups (~1, ~2, etc.)
 [ -d ~/.config/lf ] && mv --backup=numbered ~/.config/lf ~/.config/lf_backup
 
