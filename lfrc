@@ -556,7 +556,7 @@ map cH cd ~/.config/hypr
 map cl cd ~/.config/lf
 map cn cd ~/.config/nvim
 map cV cd ~/.config/vim
-map cP cd ~/.config/polybar.old
+map cP cd ~/.config/polybar
 map cr cd ~/.config/rofi/applets/bin
 map cw cd ~/.config/waybar
 map cz cd ~/.config/zsh
