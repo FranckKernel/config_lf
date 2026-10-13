@@ -1,5 +1,5 @@
 # interpreter for shell commands
-set shell sh
+set shell bash
 map <enter> shell zsh
 #Need EZA ! For on select to properly show file info
 
