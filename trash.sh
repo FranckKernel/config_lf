@@ -1,10 +1,10 @@
 #!/bin/sh
 # Usage: trash.sh put FILE... | restore | undo | empty
 
-if command -v trashy >/dev/null 2>&1; then
-	backend=trashy
-elif command -v trash-put >/dev/null 2>&1; then
+if command -v trash-put >/dev/null 2>&1; then
 	backend=trashcli
+elif command -v trashy >/dev/null 2>&1; then
+	backend=trashy
 elif [ "$(uname -s)" = Darwin ]; then
 	backend=finder
 else
