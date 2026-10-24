@@ -2,3 +2,6 @@ lf\ source\ code
 "lf source code"
 **/.nvim-session
 
+.DS_Store/
+
+
