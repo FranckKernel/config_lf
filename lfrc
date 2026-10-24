@@ -204,39 +204,6 @@ cmd open ${{
 
 
 
-cmd open_before &{{
-	nvim_exts=("lua" "c" "asm" "py" "cpp" "h" "sh" "rs")  # add more if needed
-	printf "" > open_log.txt
-
-
-	files=$(printf "$fx" | tr '\n' ';')
-	while [ "$files" ]; do
-		file=${files%%;*}
-		printf "0: file = $file\n" >>  open_log.txt
-		ext="${file##*.}"
-		printf "1: ext = $ext\n" >> open_log.txt
-		ext="${ext,,}"  # lowercase
-		printf "2: ext = $ext\n" >> open_log.txt
-
-		# First pass: check by extension
-		for e in "${nvim_exts[@]}"; do
-			if [ "$ext" = "$e" ]; then
-				lf -remote "send $id \$nvim \"\$file\""
-				return
-			fi
-		done
-
-		# Second pass: check by MIME type
-		mime_type=$(file --mime-type -Lb "$file")
-		if [[ "$mime_type" == text/* ]] || [ "$mime_type" = "inode/x-empty" ] || [ "$mime_type" = "application/json" ]; then
-			lf -remote "send $id \$nvim \"\$file\""
-			return
-		fi
-
-		# Fallback for everything else
-		xdg-open "$f"
-	done
-}}
 
 
 
@@ -392,7 +359,7 @@ cmd toggle_exec ${{
 
 cmd edit_config ${{ 
 	nvim --cmd "autocmd VimEnter * CdHere" ~/.config/lf/lfrc
-	}}
+}}
 
 
 cmd change_permissions1 ${{

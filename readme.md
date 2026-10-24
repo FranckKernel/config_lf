@@ -24,3 +24,6 @@ On MacOS
 ```
 brew install ctpv
 ```
+
+
+The lfrc.zsh softlink exist just so syntax highlighthing exist. It's not actually a zsh so it is doomed to be bugged
