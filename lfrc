@@ -133,70 +133,80 @@ cmd trash ${{
 }}
 
 
+
+
 cmd open ${{
-	# printf "Open is being called\n" >> open_log.txt
     nvim_exts=("lua" "c" "asm" "py" "cpp" "h" "sh" "rs" "srt" "ixx" "cppm" "vhd" "tcl" "xdc" )
 
+    # Pick the default-application opener for this OS
+    case "$(uname -s)" in
+        Darwin) opener=open ;;
+        Linux)  opener=xdg-open ;;
+        *)
+            if command -v xdg-open >/dev/null 2>&1; then
+                opener=xdg-open
+            elif command -v open >/dev/null 2>&1; then
+                opener=open
+            else
+                printf 'No supported file opener found.\n' >&2
+                exit 1
+            fi
+            ;;
+    esac
 
     nvim_files=()
-    xdg_files=()
+    other_files=()
 
+    # $fx is newline-separated; don't split on spaces
     for file in $fx; do
-        # printf "file = %s\n" "$file" >> open_log.txt
+        case "$file" in
+            *.*) ext="${file##*.}" ;;
+            *)   ext="" ;;
+        esac
+        ext=$(printf '%s' "$ext" | tr '[:upper:]' '[:lower:]')
 
-        ext="${file##*.}"
-        ext="${ext,,}"
+        opened_with_nvim=false
 
-        opened=false
-
-        for e in "${nvim_exts[@]}"; do
-            if [ "$ext" = "$e" ]; then
-                nvim_files+=("$file")
-                opened=true
-                break
-            fi
-        done
-
-        if [ "$opened" = false ]; then
-            mime_type=$(file --mime-type -Lb "$file")
-            if [[ "$mime_type" == text/* ]] || [ "$mime_type" = "inode/x-empty" ] || [ "$mime_type" = "application/json" ]; then
-                nvim_files+=("$file")
-                opened=true
-            fi
+        if [ -n "$ext" ]; then
+            for e in "${nvim_exts[@]}"; do
+                if [ "$ext" = "$e" ]; then
+                    opened_with_nvim=true
+                    break
+                fi
+            done
         fi
 
-        if [ "$opened" = false ]; then
-            xdg_files+=("$file")
+        if [ "$opened_with_nvim" = false ]; then
+            mime_type=$(file --mime-type -Lb "$file" 2>/dev/null)
+            case "$mime_type" in text/*|inode/x-empty|application/json|application/x-empty)
+                    opened_with_nvim=true
+                    ;;
+            esac
+        fi
+
+        if [ "$opened_with_nvim" = true ]; then
+            nvim_files+=("$file")
+        else
+            other_files+=("$file")
         fi
     done
 
-	# printf "\nThe neovim files: %s\n" "${nvim_files[*]}" >> open_log.txt
-	# printf "The xdg-open files: %s\n\n" "${xdg_files[*]}" >> open_log.txt
-
-
-    # Open all Neovim files at once
+    # Open all text/code files in one nvim call (via your $nvim lf command)
     if [ ${#nvim_files[@]} -gt 0 ]; then
-		# printf "nvim ${nvim_files[*]}\n" >> open_log.txt
-
-		cmd="send $id \$nvim"
-		for f in "${nvim_files[@]}"; do
-			cmd="$cmd \"$f\""
-		done
-
-		lf -remote "$cmd"
+        cmd="send $id \$nvim"
+        for f in "${nvim_files[@]}"; do
+            # escape backslashes and double quotes for lf's parser
+            esc=$(printf '%s' "$f" | sed 's/\\/\\\\/g; s/"/\\"/g')
+            cmd="$cmd \"$esc\""
+        done
+        lf -remote "$cmd"
     fi
 
-
-	# Open all xdg-open files individually in background
-	if [ ${#xdg_files[@]} -gt 0 ]; then
-		# printf "xdg-open files:\n" >> open_log.txt
-		for f in "${xdg_files[@]}"; do
-			# printf "xdg-open %s\n" "$f" >> open_log.txt
-			xdg-open "$f" &
-		done
-	fi
+    # Everything else: default app, detached, one at a time
+    for f in "${other_files[@]}"; do
+        "$opener" "$f" >/dev/null 2>&1 &
+    done
 }}
-
 
 
 
