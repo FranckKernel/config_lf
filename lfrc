@@ -116,21 +116,12 @@ cmd unarchive ${{
 
 # Trash bindings
 cmd trash ${{
-
-	files=$(printf "$fx" | tr '\n' ';')
-	# printf "" > trash_log.txt
-	while [ "$files" ]; do
-		file=${files%%;*}
-		# printf "$file" >> trash_log.txt
-
-		trashy put "$(basename "$file")"
-		if [ "$files" = "$file" ]; then
-		files=''
-		else
-		files="${files#*;}"
-		fi
-	done
+    printf '%s\n' "$fx" | while IFS= read -r f; do
+        [ -n "$f" ] && "$HOME/.config/lf/trash.sh" put "$f"
+    done
+    lf -remote "send $id reload"
 }}
+
 
 
 
@@ -507,10 +498,13 @@ map <right> open
 
 # Basic Functions
 map . set hidden!
+
+
 map dd trash
-map u $trashy restore -r 0
-map dr $trashy restore
-map de $trashy empty --all
+map u  $"$HOME/.config/lf/trash.sh" undo
+map dr $"$HOME/.config/lf/trash.sh" restore
+map de $"$HOME/.config/lf/trash.sh" empty
+
 map p paste
 map x cut
 map y copy
