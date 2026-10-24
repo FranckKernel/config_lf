@@ -30,13 +30,13 @@ set ratios 1:2:3
 # set info size:perm:time
 
 # Previewer and Cleaner settings
-# set previewer ctpv
-# set cleaner ctpvclear
-# &ctpv -s $id
-# &ctpvquit $id
+set previewer ctpv
+set cleaner ctpvclear
+&ctpv -s $id
+&ctpvquit $id
 
-set previewer ~/.config/lf/previewer.sh
-set cleaner ~/.config/lf/cleaner.sh
+# set previewer ~/.config/lf/previewer.sh
+# set cleaner ~/.config/lf/cleaner.sh
 
 
 # Basic Settings
