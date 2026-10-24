@@ -1,19 +1,16 @@
 #!/bin/sh
 # Usage: trash.sh put FILE... | restore | undo | empty
 
-case "$(uname -s)" in
-Darwin) backend=finder ;;
-*)
-	if command -v trashy >/dev/null 2>&1; then
-		backend=trashy
-	elif command -v trash-put >/dev/null 2>&1; then
-		backend=trashcli
-	else
-		printf 'No trash tool found (install trashy or trash-cli).\n' >&2
-		exit 1
-	fi
-	;;
-esac
+if command -v trashy >/dev/null 2>&1; then
+	backend=trashy
+elif command -v trash-put >/dev/null 2>&1; then
+	backend=trashcli
+elif [ "$(uname -s)" = Darwin ]; then
+	backend=finder
+else
+	printf 'No trash tool found (install trashy or trash-cli).\n' >&2
+	exit 1
+fi
 
 action=$1
 shift
